@@ -41,6 +41,11 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }

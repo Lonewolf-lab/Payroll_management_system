@@ -5,7 +5,8 @@ export interface User {
   username: string;
   email: string;
   roles: string[];
-  accessToken: string;
+  token: string;
+  type?: string;
 }
 
 interface LoginRequest {
@@ -38,21 +39,28 @@ interface JwtResponse {
 const AuthService = {
   login: async (username: string, password: string): Promise<ApiResponse<User>> => {
     try {
-      const { data } = await apiClient.post<JwtResponse>('/auth/signin', {
+      // Fixed endpoint to match backend
+      const response = await apiClient.post<JwtResponse>('/api/auth/signin', {
         username,
         password
       });
 
+      const data = response.data;
+      if (!data || !data.id) {
+        throw new Error("Invalid login response from server");
+      }
+
       const user: User = {
-        id: data.id,
+        id: Number(data.id), // Convert Long to number
         username: data.username,
         email: data.email,
         roles: data.roles,
-        accessToken: data.token
+        token: data.token,
+        type: data.type
       };
       
       // Store user data in localStorage
-      localStorage.setItem('token', user.accessToken);
+      localStorage.setItem('token', user.token);
       localStorage.setItem('user', JSON.stringify(user));
       
       return {
@@ -69,7 +77,7 @@ const AuthService = {
 
   register: async (userData: Omit<RegisterRequest, 'role'> & { role: string }): Promise<ApiResponse<void>> => {
     try {
-      await apiClient.post('/auth/signup', {
+      await apiClient.post('/api/auth/signup', {
         ...userData,
         roles: [userData.role]
       });

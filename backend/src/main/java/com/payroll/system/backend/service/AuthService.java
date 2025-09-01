@@ -2,6 +2,7 @@ package com.payroll.system.backend.service;
 
 import com.payroll.system.backend.model.ERole;
 import com.payroll.system.backend.model.Role;
+import com.payroll.system.backend.model.Employee;
 import com.payroll.system.backend.model.User;
 import com.payroll.system.backend.payload.request.LoginRequest;
 import com.payroll.system.backend.payload.request.SignupRequest;
@@ -11,8 +12,8 @@ import com.payroll.system.backend.repository.RoleRepository;
 import com.payroll.system.backend.repository.UserRepository;
 import com.payroll.system.backend.security.jwt.JwtUtils;
 import com.payroll.system.backend.security.services.UserDetailsImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
+
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -42,14 +45,20 @@ public class AuthService {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    private EmployeeService employeeService;
+
     public JwtResponse authenticateUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+        );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
@@ -59,7 +68,8 @@ public class AuthService {
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles);
+                roles
+        );
     }
 
     public MessageResponse registerUser(SignupRequest signUpRequest) {
@@ -75,7 +85,8 @@ public class AuthService {
         User user = new User(
                 signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+                encoder.encode(signUpRequest.getPassword())
+        );
 
         Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
@@ -101,7 +112,17 @@ public class AuthService {
         }
 
         user.setRoles(roles);
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        // Create employee record for the new user
+        Employee employee = new Employee();
+        employee.setFirstName(savedUser.getUsername()); // Using username as first name initially
+        employee.setLastName(""); // User can update this later
+        employee.setEmail(savedUser.getEmail());
+        employee.setJoiningDate(LocalDate.now());
+        employee.setUser(savedUser);
+
+        employeeService.saveEmployee(employee);
 
         return new MessageResponse("User registered successfully!");
     }
