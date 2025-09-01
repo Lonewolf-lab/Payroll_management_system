@@ -17,13 +17,68 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import EmployeeService from "@/services/employee-service";
-import SalaryService from "@/services/salary-service";
-import LeaveService from "@/services/leave-service";
+import EmployeeService, { Employee as EmployeeType } from "@/services/employee-service";
+import SalaryService, { Salary } from "@/services/salary-service";
+import LeaveService, { Leave } from "@/services/leave-service";
 import AuthService from "@/services/auth-service";
 
 export default function EmployeeDashboard() {
-  const [employee, setEmployee] = useState({
+  interface EmployeeData {
+    id?: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    department: string;
+    position: string;
+    joinDate: string;
+    address?: string;
+  }
+
+  interface SalaryData {
+    id?: number;
+    basicSalary: number;
+    allowances: number;
+    deductions: number;
+    netSalary: number;
+  }
+
+  interface LeaveData {
+    id: number;
+    leaveType: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    reason: string;
+  }
+
+  interface EmployeeState {
+    name: string;
+    employeeId: string;
+    department: string;
+    designation: string;
+    email: string;
+    phone: string;
+    location: string;
+    joinDate: string;
+  }
+
+  interface SalaryState {
+    basic: number;
+    allowances: number;
+    deductions: number;
+    netPay: number;
+  }
+
+  interface LeaveStatus {
+    id: number;
+    type: string;
+    dates: string;
+    status: string;
+    reason: string;
+  }
+
+  const [employee, setEmployee] = useState<EmployeeState>({
     name: "Loading...",
     employeeId: "...",
     department: "...",
@@ -34,14 +89,14 @@ export default function EmployeeDashboard() {
     joinDate: "..."
   });
 
-  const [salary, setSalary] = useState({
+  const [salary, setSalary] = useState<SalaryState>({
     basic: 0,
     allowances: 0,
     deductions: 0,
     netPay: 0
   });
 
-  const [leaveStatus, setLeaveStatus] = useState([]);
+  const [leaveStatus, setLeaveStatus] = useState<LeaveStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -57,41 +112,49 @@ export default function EmployeeDashboard() {
         }
         
         // Fetch employee data
-        const employeeData = await EmployeeService.getEmployeeByUserId(currentUser.id);
+        const employeeResponse = await EmployeeService.getEmployeeByUserId(currentUser.id);
+        const employeeData = employeeResponse.data;
+        
         if (employeeData) {
           setEmployee({
-            name: employeeData.name || "N/A",
-            employeeId: employeeData.id || "N/A",
-            department: employeeData.department || "N/A",
-            designation: employeeData.designation || "N/A",
-            email: employeeData.email || "N/A",
+            name: `${employeeData.firstName} ${employeeData.lastName}`,
+            employeeId: employeeData.id?.toString() || "N/A",
+            department: employeeData.department,
+            designation: employeeData.position,
+            email: employeeData.email,
             phone: employeeData.phone || "N/A",
-            location: employeeData.location || "N/A",
-            joinDate: new Date(employeeData.joinDate).toLocaleDateString() || "N/A"
+            location: employeeData.address || "N/A",
+            joinDate: new Date(employeeData.joinDate).toLocaleDateString()
           });
           
           // Fetch salary data
-          const salaryData = await SalaryService.getSalariesByEmployeeId(employeeData.id);
-          if (salaryData && salaryData.length > 0) {
-            const latestSalary = salaryData[0]; // Assuming the latest is first
-            setSalary({
-              basic: latestSalary.basicSalary || 0,
-              allowances: latestSalary.allowances || 0,
-              deductions: latestSalary.deductions || 0,
-              netPay: latestSalary.netSalary || 0
-            });
-          }
-          
-          // Fetch leave data
-          const leaveData = await LeaveService.getLeavesByEmployeeId(employeeData.id);
-          if (leaveData) {
-            setLeaveStatus(leaveData.map(leave => ({
-              id: leave.id,
-              type: leave.leaveType,
-              dates: `${new Date(leave.startDate).toLocaleDateString()} - ${new Date(leave.endDate).toLocaleDateString()}`,
-              status: leave.status.toLowerCase(),
-              reason: leave.reason
-            })));
+          if (employeeData.id) {
+            const salaryResponse = await SalaryService.getSalariesByEmployeeId(employeeData.id);
+            const salaryData = salaryResponse.data;
+            
+            if (Array.isArray(salaryData) && salaryData.length > 0) {
+              const latestSalary = salaryData[0]; // Assuming the latest is first
+              setSalary({
+                basic: latestSalary.basicSalary || 0,
+                allowances: latestSalary.allowances || 0,
+                deductions: latestSalary.deductions || 0,
+                netPay: latestSalary.netSalary || 0
+              });
+            }
+            
+            // Fetch leave data
+            const leaveResponse = await LeaveService.getLeavesByEmployeeId(employeeData.id);
+            const leaveData = leaveResponse.data;
+            
+            if (Array.isArray(leaveData)) {
+              setLeaveStatus(leaveData.map(leave => ({
+                id: leave.id,
+                type: leave.leaveType,
+                dates: `${new Date(leave.startDate).toLocaleDateString()} - ${new Date(leave.endDate).toLocaleDateString()}`,
+                status: leave.status.toLowerCase(),
+                reason: leave.reason
+              })));
+            }
           }
         }
       } catch (err) {

@@ -26,6 +26,7 @@ apiClient.interceptors.request.use(
 // Add a response interceptor for error handling
 apiClient.interceptors.response.use(
   (response) => {
+    // Return the data directly since we're using the response interceptor
     return response.data;
   },
   (error: AxiosError<{ message?: string }>) => {

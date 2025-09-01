@@ -29,7 +29,7 @@ interface ApiResponse<T> {
 
 interface JwtResponse {
   token: string;
-  type: string;
+  type?: string; // Make type optional
   id: number;
   username: string;
   email: string;
@@ -39,25 +39,26 @@ interface JwtResponse {
 const AuthService = {
   login: async (username: string, password: string): Promise<ApiResponse<User>> => {
     try {
-      // Fixed endpoint to match backend
-      const response = await apiClient.post<JwtResponse>('/api/auth/signin', {
+      // The response interceptor already gives us the response data directly
+      const responseData = await apiClient.post<JwtResponse>('/auth/signin', {
         username,
         password
-      });
+      }) as unknown as JwtResponse;
 
-      const data = response.data;
-      if (!data || !data.id) {
+      if (!responseData || !responseData.id) {
         throw new Error("Invalid login response from server");
       }
 
       const user: User = {
-        id: Number(data.id), // Convert Long to number
-        username: data.username,
-        email: data.email,
-        roles: data.roles,
-        token: data.token,
-        type: data.type
+        id: responseData.id,
+        username: responseData.username,
+        email: responseData.email,
+        roles: responseData.roles,
+        token: responseData.token,
+        type: responseData.type || 'Bearer'
       };
+      
+      console.log('Login successful. User:', user);
       
       // Store user data in localStorage
       localStorage.setItem('token', user.token);
@@ -77,7 +78,7 @@ const AuthService = {
 
   register: async (userData: Omit<RegisterRequest, 'role'> & { role: string }): Promise<ApiResponse<void>> => {
     try {
-      await apiClient.post('/api/auth/signup', {
+      await apiClient.post('/auth/signup', {
         ...userData,
         roles: [userData.role]
       });

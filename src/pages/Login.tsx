@@ -5,14 +5,12 @@ import { DashboardCard } from "@/components/ui/dashboard-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import AuthService from "@/services/auth-service";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("employee"); // default role as employee
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -36,16 +34,32 @@ export default function Login() {
 
       if (response.success && response.data) {
         const user = response.data;
+        console.log('Login response data:', user);
 
+        // Ensure roles is an array and convert to uppercase for comparison
+        const userRoles = Array.isArray(user.roles) 
+          ? user.roles.map(role => role.toUpperCase())
+          : [];
+        
+        console.log('User roles after processing:', userRoles);
+
+        // Show success toast
         toast({
           title: "Login Successful",
-          description: `Welcome back, ${user.username}! Redirecting to dashboard...`,
+          description: `Welcome back, ${user.username}!`,
         });
 
-        // Redirect based on selected role
-        setTimeout(() => {
-          navigate(role === "admin" ? "/admin-dashboard" : "/employee-dashboard");
-        }, 1500);
+        // Immediate redirect without setTimeout
+        if (userRoles.includes('ROLE_ADMIN')) {
+          console.log('Redirecting to admin dashboard');
+          navigate('/admin-dashboard');
+        } else if (userRoles.some(role => ['ROLE_EMPLOYEE', 'ROLE_USER'].includes(role))) {
+          console.log('Redirecting to employee dashboard');
+          navigate('/employee-dashboard');
+        } else {
+          console.warn('No valid role found, redirecting to home');
+          navigate('/');
+        }
       } else {
         throw new Error(response.message || "Invalid credentials");
       }
@@ -94,20 +108,6 @@ export default function Login() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                   />
-                </div>
-
-                {/* Role Selection Dropdown */}
-                <div className="space-y-2">
-                  <Label htmlFor="role">Login As</Label>
-                  <Select value={role} onValueChange={setRole}>
-                    <SelectTrigger id="role" className="w-full">
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="employee">Employee</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
 
                 {/* Submit Button */}
