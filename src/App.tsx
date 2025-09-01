@@ -32,7 +32,7 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           
           {/* Protected Employee Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['ROLE_USER', 'ROLE_ADMIN']} />}>
+          <Route element={<ProtectedRoute allowedRoles={['ROLE_EMPLOYEE', 'ROLE_ADMIN']} />}>
             <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
             <Route path="/employee-profile" element={<EmployeeProfile />} />
             <Route path="/employee-salary" element={<EmployeeSalary />} />

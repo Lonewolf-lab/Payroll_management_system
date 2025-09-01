@@ -18,11 +18,15 @@ public class EmployeeService {
     }
 
     public Optional<Employee> getEmployeeById(Long id) {
-        return employeeRepository.findById(id);
+        System.out.println(id);
+
+        var employee = employeeRepository.findById(id);
+        System.out.println(employee.toString());
+        return employee;
     }
 
     public Optional<Employee> getEmployeeByUserId(Long userId) {
-        return employeeRepository.findByUserId(userId);
+        return employeeRepository.findById(userId);
     }
 
     public Employee saveEmployee(Employee employee) {

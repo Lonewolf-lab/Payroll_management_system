@@ -75,10 +75,10 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // Create sample employee if not exists
-        if (!userRepository.existsByUsername("john_doe")) {
+        if (!userRepository.existsByUsername("employee")) {
             User employee = new User(
-                "john_doe",
-                "john.doe@company.com",
+                "employee",
+                "employee@gmail.com",
                 passwordEncoder.encode("Employee@123")
             );
             

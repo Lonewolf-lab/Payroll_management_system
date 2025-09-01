@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UserPlus, User, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import AuthService, {RegisterRequest} from "@/services/auth-service.ts";
 
 export default function Signup() {
   const [role, setRole] = useState<string>("");
@@ -18,7 +19,7 @@ export default function Signup() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!role || !name || !email || !password || !confirmPassword) {
@@ -39,11 +40,25 @@ export default function Signup() {
       return;
     }
 
-    // Simulate signup success
-    toast({
-      title: "Account Created",
-      description: "Your account has been created successfully!",
-    });
+    const userData: RegisterRequest  = {
+      username: name,
+      email: email,
+      password: password,
+      role: [role],
+    }
+      const response = await AuthService.register(userData);
+
+      if (response.success && response.data) {
+        const user = response.data;
+        console.log('Signup response data:', user);
+
+        toast({
+          title: "Account Created",
+          description: "Your account has been created successfully!",
+        });
+      }
+
+
 
     // Redirect to login
     setTimeout(() => {

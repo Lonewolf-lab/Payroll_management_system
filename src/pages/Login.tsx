@@ -55,7 +55,11 @@ export default function Login() {
           navigate('/admin-dashboard');
         } else if (userRoles.some(role => ['ROLE_EMPLOYEE', 'ROLE_USER'].includes(role))) {
           console.log('Redirecting to employee dashboard');
-          navigate('/employee-dashboard');
+          navigate('/employee-dashboard', {
+            state: {
+              user: user
+            }
+          });
         } else {
           console.warn('No valid role found, redirecting to home');
           navigate('/');

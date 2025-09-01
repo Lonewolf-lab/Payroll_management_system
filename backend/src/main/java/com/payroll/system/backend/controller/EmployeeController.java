@@ -36,7 +36,8 @@ public class EmployeeController {
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN') or @securityService.isUserOwner(authentication, #userId)")
     public ResponseEntity<Employee> getEmployeeByUserId(@PathVariable Long userId) {
-        Optional<Employee> employee = employeeService.getEmployeeByUserId(userId);
+        Optional<Employee> employee = employeeService.getEmployeeById(userId);
+        System.out.println(employee.toString() + " " + userId);
         return employee.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

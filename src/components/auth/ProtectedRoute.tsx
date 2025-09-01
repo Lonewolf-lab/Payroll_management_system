@@ -11,7 +11,8 @@ export const ProtectedRoute = ({
   redirectTo = '/login'
 }: ProtectedRouteProps) => {
   const user = AuthService.getCurrentUser();
-  
+  console.log("Hello")
+  console.log(user)
   // If user is not authenticated, redirect to login
   if (!user) {
     return <Navigate to={redirectTo} replace />;

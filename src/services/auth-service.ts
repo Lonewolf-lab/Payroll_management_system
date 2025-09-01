@@ -14,7 +14,7 @@ interface LoginRequest {
   password: string;
 }
 
-interface RegisterRequest {
+export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
@@ -76,11 +76,10 @@ const AuthService = {
     }
   },
 
-  register: async (userData: Omit<RegisterRequest, 'role'> & { role: string }): Promise<ApiResponse<void>> => {
+  register: async (userData: RegisterRequest): Promise<ApiResponse<User>> => {
     try {
       await apiClient.post('/auth/signup', {
         ...userData,
-        roles: [userData.role]
       });
       
       return { success: true };

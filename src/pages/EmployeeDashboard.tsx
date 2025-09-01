@@ -21,6 +21,7 @@ import EmployeeService, { Employee as EmployeeType } from "@/services/employee-s
 import SalaryService, { Salary } from "@/services/salary-service";
 import LeaveService, { Leave } from "@/services/leave-service";
 import AuthService from "@/services/auth-service";
+import {useLocation} from "react-router-dom";
 
 export default function EmployeeDashboard() {
   interface EmployeeData {
@@ -77,7 +78,8 @@ export default function EmployeeDashboard() {
     status: string;
     reason: string;
   }
-
+  const location = useLocation();
+  const {user} = location.state || {};
   const [employee, setEmployee] = useState<EmployeeState>({
     name: "Loading...",
     employeeId: "...",
@@ -113,7 +115,8 @@ export default function EmployeeDashboard() {
         
         // Fetch employee data
         const employeeResponse = await EmployeeService.getEmployeeByUserId(currentUser.id);
-        const employeeData = employeeResponse.data;
+        console.log(employeeResponse);
+        const employeeData = employeeResponse;
         
         if (employeeData) {
           setEmployee({
