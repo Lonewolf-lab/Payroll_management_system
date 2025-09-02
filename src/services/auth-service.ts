@@ -57,13 +57,13 @@ const AuthService = {
         token: responseData.token,
         type: responseData.type || 'Bearer'
       };
-      
+
       console.log('Login successful. User:', user);
-      
+
       // Store user data in localStorage
       localStorage.setItem('token', user.token);
       localStorage.setItem('user', JSON.stringify(user));
-      
+
       return {
         success: true,
         data: user
@@ -81,7 +81,7 @@ const AuthService = {
       await apiClient.post('/auth/signup', {
         ...userData,
       });
-      
+
       return { success: true };
     } catch (error: any) {
       return {
@@ -99,7 +99,7 @@ const AuthService = {
   getCurrentUser: (): User | null => {
     const userStr = localStorage.getItem('user');
     if (!userStr) return null;
-    
+
     try {
       return JSON.parse(userStr);
     } catch (e) {
@@ -111,7 +111,7 @@ const AuthService = {
   isAuthenticated: (): boolean => {
     const token = localStorage.getItem('token');
     if (!token) return false;
-    
+
     // Here you could also validate the token's expiration
     // For now, we'll just check if it exists
     return true;

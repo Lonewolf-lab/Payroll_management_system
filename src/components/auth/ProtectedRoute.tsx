@@ -7,9 +7,9 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({
-  allowedRoles = [],
-  redirectTo = '/login'
-}: ProtectedRouteProps) => {
+                                 allowedRoles = [],
+                                 redirectTo = '/login'
+                               }: ProtectedRouteProps) => {
   const user = AuthService.getCurrentUser();
   console.log("Hello")
   console.log(user)

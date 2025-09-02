@@ -32,7 +32,7 @@ export default function AdminEmployees() {
       department: "Engineering",
       designation: "Senior Developer",
       status: "Active",
-      phone: "+91 587XXX819"
+      phone: "+91 587XXX8192"
     }
   ];
 

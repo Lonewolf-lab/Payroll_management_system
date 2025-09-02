@@ -37,10 +37,10 @@ export default function Login() {
         console.log('Login response data:', user);
 
         // Ensure roles is an array and convert to uppercase for comparison
-        const userRoles = Array.isArray(user.roles) 
-          ? user.roles.map(role => role.toUpperCase())
-          : [];
-        
+        const userRoles = Array.isArray(user.roles)
+            ? user.roles.map(role => role.toUpperCase())
+            : [];
+
         console.log('User roles after processing:', userRoles);
 
         // Show success toast

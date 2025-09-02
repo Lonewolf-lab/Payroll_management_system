@@ -40,7 +40,7 @@ public class DataInitializer implements CommandLineRunner {
                     role.setName(ERole.ROLE_ADMIN);
                     return roleRepository.save(role);
                 });
-        
+
         Role employeeRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
                 .orElseGet(() -> {
                     Role role = new Role();
@@ -51,17 +51,17 @@ public class DataInitializer implements CommandLineRunner {
         // Create admin user if not exists
         if (!userRepository.existsByUsername("admin")) {
             User admin = new User(
-                "admin",
-                "admin@payroll.com",
-                passwordEncoder.encode("Admin@123")
+                    "admin",
+                    "admin@payroll.com",
+                    passwordEncoder.encode("Admin@123")
             );
-            
+
             Set<Role> adminRoles = new HashSet<>();
             adminRoles.add(adminRole);
             admin.setRoles(adminRoles);
-            
+
             User savedAdmin = userRepository.save(admin);
-            
+
             // Create admin employee record
             Employee adminEmployee = new Employee();
             adminEmployee.setFirstName("System");
@@ -77,17 +77,17 @@ public class DataInitializer implements CommandLineRunner {
         // Create sample employee if not exists
         if (!userRepository.existsByUsername("employee")) {
             User employee = new User(
-                "employee",
-                "employee@gmail.com",
-                passwordEncoder.encode("Employee@123")
+                    "employee",
+                    "employee@gmail.com",
+                    passwordEncoder.encode("Employee@123")
             );
-            
+
             Set<Role> employeeRoles = new HashSet<>();
             employeeRoles.add(employeeRole);
             employee.setRoles(employeeRoles);
-            
+
             User savedEmployee = userRepository.save(employee);
-            
+
             // Create employee record
             Employee emp = new Employee();
             emp.setFirstName("emp");

@@ -21,39 +21,39 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          
-          {/* Protected Employee Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['ROLE_EMPLOYEE', 'ROLE_ADMIN']} />}>
-            <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
-            <Route path="/employee-profile" element={<EmployeeProfile />} />
-            <Route path="/employee-salary" element={<EmployeeSalary />} />
-            <Route path="/employee-leave" element={<EmployeeLeave />} />
-          </Route>
-          
-          {/* Protected Admin Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['ROLE_ADMIN']} />}>
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/admin-employees" element={<AdminEmployees />} />
-            <Route path="/admin-payroll" element={<AdminPayroll />} />
-            <Route path="/admin-leave" element={<AdminLeave />} />
-            <Route path="/admin-settings" element={<AdminSettings />} />
-          </Route>
-          
-          {/* Redirect any unknown routes to the home page */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            {/* Protected Employee Routes */}
+            <Route element={<ProtectedRoute allowedRoles={['ROLE_EMPLOYEE', 'ROLE_ADMIN']} />}>
+              <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+              <Route path="/employee-profile" element={<EmployeeProfile />} />
+              <Route path="/employee-salary" element={<EmployeeSalary />} />
+              <Route path="/employee-leave" element={<EmployeeLeave />} />
+            </Route>
+
+            {/* Protected Admin Routes */}
+            <Route element={<ProtectedRoute allowedRoles={['ROLE_ADMIN']} />}>
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              <Route path="/admin-employees" element={<AdminEmployees />} />
+              <Route path="/admin-payroll" element={<AdminPayroll />} />
+              <Route path="/admin-leave" element={<AdminLeave />} />
+              <Route path="/admin-settings" element={<AdminSettings />} />
+            </Route>
+
+            {/* Redirect any unknown routes to the home page */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
 );
 
 export default App;

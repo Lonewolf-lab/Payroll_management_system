@@ -21,21 +21,17 @@ import { useState } from "react";
 export default function EmployeeProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: "John Smith",
-    email: "john.smith@company.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main St, New York, NY 10001",
-    emergencyContact: "Jane Smith - +1 (555) 987-6543"
+    name: "Sidd Sinha",
+    email: "sidd@company.com",
+    phone: "+91-9876543210",
+    address: "1Hauz Khas, New delhi",
   });
 
   const employee = {
     employeeId: "EMP-001",
-    department: "Engineering",
-    designation: "Senior Software Developer",
-    joinDate: "January 15, 2022",
-    reportingManager: "Sarah Johnson",
-    workLocation: "New York Office",
-    employmentType: "Full-time",
+    department: "IT",
+    designation: "Software Developer",
+    joinDate: "August 15, 2023",
     status: "Active"
   };
 
